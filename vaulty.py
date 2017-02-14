@@ -21,7 +21,7 @@ class REPLState:
 
     def list(self, path):
         try:
-            results = state.vault.list(path)['data']['keys']
+            results = self.vault.list(path)['data']['keys']
             self._options = results
             self._last_tab_path = path
             return results
@@ -54,7 +54,7 @@ class REPLState:
         return None
 
 
-def repl():
+def repl(state):
     in_text = input(f'{state.pwd}> ')
     bits = in_text.strip().split()
 
@@ -92,7 +92,7 @@ def repl():
     print('DEBUG:', in_text)
 
 
-if __name__ == "__main__":
+def main():
     path = os.path.expanduser('~/.vault-token')
     if os.path.isfile(path):
         with open(path) as fh:
@@ -107,8 +107,12 @@ if __name__ == "__main__":
     try:
         while True:
             try:
-                repl()
+                repl(state)
             except hvac.exceptions.Forbidden as e:
                 print(e)
     except (KeyboardInterrupt, EOFError):
         sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

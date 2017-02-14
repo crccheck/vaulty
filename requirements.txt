@@ -1,4 +1,5 @@
-hvac
+-e .
 
 # Dev
+pytest
 flake8
