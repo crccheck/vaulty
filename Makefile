@@ -22,6 +22,9 @@ clean: ## Remove temporary files
 test: ## Run test suite
 	pytest
 
+tdd: ## Run the test suite with a watcher
+	ptw -- -sxv
+
 .PHONY: version
 version:
 	@$(SED) -i -r /version/s/[0-9.]+/$(VERSION)/ setup.py

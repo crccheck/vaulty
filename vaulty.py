@@ -13,8 +13,8 @@ logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
 class REPLState:
     pwd = 'secret/'
     home = 'secret/'
-    _last_tab_path = None
-    _options = []
+    # This is only used to help assist tab completion
+    _list_cache = {}
 
     def __init__(self, vault_client):
         self.vault = vault_client
@@ -22,10 +22,10 @@ class REPLState:
     def list(self, path):
         try:
             results = self.vault.list(path)['data']['keys']
-            self._options = results
-            self._last_tab_path = path
+            self._list_cache[path] = results
             return results
         except TypeError:
+            # TODO don't fail silently
             return []
 
     def readline_completer(self, text, state):
@@ -36,10 +36,10 @@ class REPLState:
             return None
 
         if state == 0:
-            if self.pwd != self._last_tab_path:
+            if self.pwd not in self._list_cache:
                 self.list(self.pwd)
-        current_options = [x for x in self._options if x.startswith(text)]
-        in_cd = readline.get_line_buffer().startswith('cd ')
+        current_options = [x for x in self._list_cache[self.pwd] if x.startswith(text)]
+        in_cd = readline.get_line_buffer().startswith('cd ')  # TODO this is awkward
         if in_cd:
             current_options = [x for x in current_options if x.endswith('/')]
         if len(current_options) == 1:
