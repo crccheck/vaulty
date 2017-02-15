@@ -64,6 +64,19 @@ class REPLState:
         return None
 
 
+def cmd_ls(state, path=None):
+    """List secrets and paths in a path, defaults to PWD."""
+    if path is None:
+        target_path = state.pwd
+    else:
+        target_path = os.path.normpath(os.path.join(state.pwd, path)) + '/'
+    results = state.list(target_path)
+    if results:
+        return('\n'.join(results))
+
+    return(f'{path} is not a valid path')
+
+
 def repl(state):
     in_text = input(f'{state.pwd}> ')
     bits = in_text.strip().split()
@@ -76,8 +89,7 @@ def repl(state):
         return
 
     if bits[0] == 'ls' or bits[0] == 'l':
-        # TODO list bits[1] if it exists
-        print('\n'.join(state.list(state.pwd)))
+        print(cmd_ls(state, *bits[1:]))
         return
 
     if bits[0] == 'cd':

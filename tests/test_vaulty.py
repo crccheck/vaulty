@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from vaulty import REPLState
+from vaulty import REPLState, cmd_ls
 
 
 @pytest.fixture
@@ -39,3 +39,20 @@ def test_list_stores_results(state):
 def test_list_handles_bad_path(state):
     state.list('bad/path/')
     assert 'bad/path/' not in state._list_cache
+
+
+# Commands
+##########
+
+def test_ls_reads_pwd(state):
+    state.pwd = 'foo/bar/'
+    assert cmd_ls(state) == 'a\nb\nc'
+
+
+def test_ls_reads_target(state):
+    state.pwd = 'foo'
+    assert cmd_ls(state, 'bar/') == 'a\nb\nc'
+
+
+def test_ls_reports_bad_target(state):
+    assert 'not a valid path' in cmd_ls(state, 'who/knows/where/this/goes')
