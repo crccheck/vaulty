@@ -11,7 +11,8 @@ logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
 
 
 class REPLState:
-    pwd = 'secret/'
+    _pwd = 'secret/'  # pwd is wrapped to magically make `oldpwd` work
+    oldpwd = None
     home = 'secret/'
     # This is only used to help assist tab completion
     _list_cache = {}
@@ -27,6 +28,15 @@ class REPLState:
         except TypeError:
             # TODO don't fail silently
             return []
+
+    @property
+    def pwd(self):
+        return self._pwd
+
+    @pwd.setter
+    def pwd(self, new_pwd):
+        self.oldpwd = self._pwd
+        self._pwd = new_pwd
 
     def readline_completer(self, text, state):
         logging.debug('readline text:%s state:%d', text, state)
@@ -73,8 +83,17 @@ def repl(state):
     if bits[0] == 'cd':
         if len(bits) == 1:
             state.pwd = state.home
+            return
+
+        if bits[1] == '-':
+            new_pwd = state.oldpwd or state.pwd
         else:
-            state.pwd = os.path.normpath(os.path.join(state.pwd, bits[1])) + '/'
+            new_pwd = os.path.normpath(os.path.join(state.pwd, bits[1])) + '/'
+        if state.list(new_pwd):
+            state.pwd = new_pwd
+            return
+
+        print(f'{new_pwd} is not a valid path')
         return
 
     if bits[0] == 'cat':
