@@ -13,6 +13,8 @@ help: ## Shows this help
 clean: ## Remove temporary files
 	find . -name "*.pyc" -delete
 	find . -name ".DS_Store" -delete
+	rm -rf .coverage
+	rm -rf htmlcov
 	rm -rf *.egg
 	rm -rf *.egg-info
 	rm -rf __pycache__
@@ -20,10 +22,15 @@ clean: ## Remove temporary files
 	rm -rf dist
 
 test: ## Run test suite
-	pytest
+	pytest --cov
 
 tdd: ## Run the test suite with a watcher
 	ptw -- -sxv
+
+.PHONY: htmlcov
+htmlcov:
+	coverage html
+	open htmlcov/index.html
 
 .PHONY: version
 version:
