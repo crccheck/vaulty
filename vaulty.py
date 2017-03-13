@@ -1,6 +1,7 @@
 import logging
-import readline
 import os
+import readline
+import shlex
 import sys
 
 import hvac
@@ -11,6 +12,9 @@ logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
 
 
 class REPLState:
+    """
+    Stores state for the user's session and also wraps `hvac`.
+    """
     _pwd = 'secret/'  # pwd is wrapped to magically make `oldpwd` work
     oldpwd = None
     home = 'secret/'
@@ -74,12 +78,16 @@ def cmd_ls(state, path=None):
     if results:
         return('\n'.join(results))
 
-    return(f'{path} is not a valid path')
+    return f'{path} is not a valid path'
+
+
+def cmd_rm(state, *paths):
+    return 'rm is not implemented yet'
 
 
 def repl(state):
     in_text = input(f'{state.pwd}> ')
-    bits = in_text.strip().split()
+    bits = shlex.split(in_text)
 
     if not bits:
         return
@@ -118,6 +126,10 @@ def repl(state):
                 print(f'{key}={value}')
         except TypeError:
             print(f'{bits[1]} does not exist')
+        return
+
+    if bits[0] == 'rm':
+        print(cmd_rm(state, *bits[1:]))
         return
 
     print('DEBUG:', in_text)

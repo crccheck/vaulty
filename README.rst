@@ -14,3 +14,9 @@ Supports:
 * ``cat``
 * ``cd``
 * ``ls``
+
+Usage
+-----
+
+    $ pip install vaulty
+    $ vaulty
