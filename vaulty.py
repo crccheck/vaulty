@@ -135,6 +135,9 @@ def main():
     state.home = state.pwd = os.path.join(state.pwd, team) + '/'
     readline.set_completer(state.readline_completer)
     readline.parse_and_bind('tab: complete')
+    # readline.get_completer_delims()
+    # readline.set_completer_delims('\n`~!@#$%^&*()-=+[{]}\|;:'",<>/? ')
+    readline.set_completer_delims('\n`~!@#$%^&*()=+[{]}\|;:\'",<>/? ')
     try:
         while True:
             try:
