@@ -18,5 +18,7 @@ Supports:
 Usage
 -----
 
+::
+
     $ pip install vaulty
     $ vaulty

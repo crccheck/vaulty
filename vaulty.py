@@ -7,7 +7,7 @@ import sys
 import hvac
 
 
-LOG_FILENAME = '/tmp/completer.log'
+LOG_FILENAME = '/tmp/vaulty-completer.log'
 logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
 
 
