@@ -36,8 +36,9 @@ class REPLState:
     def read(self, path):
         try:
             return self.vault.read(path)['data']
-        except TypeError:
+        except TypeError as e:
             # TODO don't fail silently
+            logging.warn(e)
             return {}
 
     @property
@@ -60,9 +61,6 @@ class REPLState:
             if self.pwd not in self._list_cache:
                 self.list(self.pwd)
         current_options = [x for x in self._list_cache[self.pwd] if x.startswith(text)]
-        in_cd = readline.get_line_buffer().startswith('cd ')  # TODO this is awkward
-        if in_cd:
-            current_options = [x for x in current_options if x.endswith('/')]
         if len(current_options) == 1:
             return current_options[0]
 
@@ -115,8 +113,11 @@ def repl(state):
         if bits[1] == '-':
             new_pwd = state.oldpwd or state.pwd
         else:
-            new_pwd = os.path.normpath(os.path.join(state.pwd, bits[1])) + '/'
-        if state.list(new_pwd):
+            ending = '/' if bits[1][-1] == '/' else ''
+            # normpath strips trailing slashes, so restore it if the original had a slash
+            new_pwd = os.path.normpath(os.path.join(state.pwd, bits[1])) + ending
+        logging.info('cd %s %s %s', new_pwd, state.list(new_pwd), state.read(new_pwd))
+        if state.list(new_pwd) or state.read(new_pwd):
             state.pwd = new_pwd
             return
 
