@@ -39,6 +39,7 @@ def test_path_for(state):
     assert state.path_for() == 'secrets'
     assert state.path_for('.') == 'secrets'
     assert state.path_for(None) == 'secrets'
+    # FIXME path_for('..') is missing trailing slash
 
 
 def test_list_stores_results(state):

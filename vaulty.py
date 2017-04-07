@@ -86,7 +86,12 @@ def cmd_ls(state, path=None):
         target_path = state.pwd
     else:
         target_path = state.path_for(path)
-    results = state.list(target_path)
+
+    if target_path.endswith('/'):
+        results = state.list(target_path)
+    else:
+        results = [f'{key}={value}' for key, value in state.read(target_path).items()]
+
     if results:
         return('\n'.join(results))
 
