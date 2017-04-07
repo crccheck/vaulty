@@ -50,6 +50,13 @@ class REPLState:
         self.oldpwd = self._pwd
         self._pwd = new_pwd
 
+    def path_for(self, path=None):
+        if path is None:
+            path = '.'
+        ending = '/' if path[-1] == '/' else ''
+        # normpath strips trailing slashes, so restore it if the original had a slash
+        return os.path.normpath(os.path.join(self.pwd, path)) + ending
+
     def readline_completer(self, text, state):
         logging.debug('readline text:%s state:%d', text, state)
         if state > 5:
@@ -78,7 +85,7 @@ def cmd_ls(state, path=None):
     if path is None:
         target_path = state.pwd
     else:
-        target_path = os.path.normpath(os.path.join(state.pwd, path)) + '/'
+        target_path = state.path_for(path)
     results = state.list(target_path)
     if results:
         return('\n'.join(results))
@@ -113,9 +120,7 @@ def repl(state):
         if bits[1] == '-':
             new_pwd = state.oldpwd or state.pwd
         else:
-            ending = '/' if bits[1][-1] == '/' else ''
-            # normpath strips trailing slashes, so restore it if the original had a slash
-            new_pwd = os.path.normpath(os.path.join(state.pwd, bits[1])) + ending
+            new_pwd = state.path_for(bits[1])
         logging.info('cd %s %s %s', new_pwd, state.list(new_pwd), state.read(new_pwd))
         if state.list(new_pwd) or state.read(new_pwd):
             state.pwd = new_pwd

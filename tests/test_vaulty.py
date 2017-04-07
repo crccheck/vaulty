@@ -31,6 +31,16 @@ def test_pwd_sets_pwd_oldpwd(state):
     assert state.oldpwd == 'hi'
 
 
+def test_path_for(state):
+    state.pwd = 'secrets'
+    assert state.path_for('hello') == 'secrets/hello'
+    assert state.path_for('hello/') == 'secrets/hello/'
+    assert state.path_for('../oh/hello') == 'oh/hello'
+    assert state.path_for() == 'secrets'
+    assert state.path_for('.') == 'secrets'
+    assert state.path_for(None) == 'secrets'
+
+
 def test_list_stores_results(state):
     state.list('foo/bar/')
     assert state._list_cache['foo/bar/'] == ['a', 'b', 'c']
