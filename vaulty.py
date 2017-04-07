@@ -33,6 +33,13 @@ class REPLState:
             # TODO don't fail silently
             return []
 
+    def read(self, path):
+        try:
+            return self.vault.read(path)['data']
+        except TypeError:
+            # TODO don't fail silently
+            return {}
+
     @property
     def pwd(self):
         return self._pwd
@@ -122,7 +129,7 @@ def repl(state):
 
         secret_path = os.path.normpath(os.path.join(state.pwd, bits[1]))
         try:
-            for key, value in state.vault.read(secret_path)['data'].items():
+            for key, value in state.read(secret_path).items():
                 print(f'{key}={value}')
         except TypeError:
             print(f'{bits[1]} does not exist')
