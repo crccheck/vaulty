@@ -11,8 +11,8 @@ help: ## Shows this help
 
 
 clean: ## Remove temporary files
-	find . -name "*.pyc" -delete
 	find . -name ".DS_Store" -delete
+	rm -rf .cache
 	rm -rf .coverage
 	rm -rf htmlcov
 	rm -rf *.egg
