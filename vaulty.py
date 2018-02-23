@@ -75,6 +75,8 @@ def cmd_cd(state, dir_path=None):
 
     if dir_path == '-':
         new_pwd = state.oldpwd or state.pwd
+    elif dir_path[0] == '/':
+        new_pwd = os.path.normpath(dir_path[1:]) + '/'
     else:
         new_pwd = os.path.normpath(os.path.join(state.pwd, dir_path)) + '/'
 

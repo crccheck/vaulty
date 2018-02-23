@@ -81,6 +81,17 @@ def test_cd_somedir(state):
     assert state.pwd == 'secret/garden/'
 
 
+def test_cd_absdir(state):
+    """cd /somedir"""
+    out = cmd_cd(state, '/somedir')
+    assert out == 'somedir/ is not a valid path'
+    assert state.pwd == 'secret/'
+
+    out = cmd_cd(state, '/foo/bar')
+    assert out is None
+    assert state.pwd == 'foo/bar/'
+
+
 def test_ls_reads_pwd(state):
     state.pwd = 'foo/bar/'
     assert cmd_ls(state) == 'a\nb\nc'
