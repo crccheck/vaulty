@@ -68,6 +68,23 @@ class REPLState:
         return None
 
 
+def cmd_cd(state, dir_path=None):
+    if dir_path is None:
+        state.pwd = state.home
+        return
+
+    if dir_path == '-':
+        new_pwd = state.oldpwd or state.pwd
+    else:
+        new_pwd = os.path.normpath(os.path.join(state.pwd, dir_path)) + '/'
+
+    if state.list(new_pwd):
+        state.pwd = new_pwd
+        return
+
+    return f'{new_pwd} is not a valid path'
+
+
 def cmd_ls(state, path=None):
     """List secrets and paths in a path, defaults to PWD."""
     if path is None:
@@ -101,19 +118,8 @@ def repl(state):
         return
 
     if bits[0] == 'cd':
-        if len(bits) == 1:
-            state.pwd = state.home
-            return
-
-        if bits[1] == '-':
-            new_pwd = state.oldpwd or state.pwd
-        else:
-            new_pwd = os.path.normpath(os.path.join(state.pwd, bits[1])) + '/'
-        if state.list(new_pwd):
-            state.pwd = new_pwd
-            return
-
-        print(f'{new_pwd} is not a valid path')
+        out = cmd_cd(state, *bits[1:])
+        out and print(out)
         return
 
     if bits[0] == 'cat':
